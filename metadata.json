@@ -1,0 +1,6 @@
+{
+  "name": "Maison Beauté",
+  "description": "Aplicativo de gestão executiva e agendamento de salão de beleza de alto padrão",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

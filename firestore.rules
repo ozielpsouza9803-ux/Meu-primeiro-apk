@@ -1,0 +1,107 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // --- Services ---
+    function isValidService(data) {
+      return data.name is string && data.name.size() >= 2 && data.name.size() <= 120 &&
+             data.category is string && data.category in ['CABELO', 'COLORACAO', 'SPA_FACIAL', 'NAILS', 'MAKEUP', 'TODOS'] &&
+             data.description is string && data.description.size() <= 1000 &&
+             data.durationMinutes is int && data.durationMinutes > 0 && data.durationMinutes <= 600 &&
+             data.price is number && data.price >= 0 &&
+             (!('rating' in data) || (data.rating is number && data.rating >= 0 && data.rating <= 5.0)) &&
+             (!('isFeatured' in data) || data.isFeatured is bool) &&
+             (!('badge' in data) || (data.badge is string && data.badge.size() <= 50));
+    }
+
+    match /services/{serviceId} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && isValidId(serviceId) && isValidService(request.resource.data);
+      allow delete: if false;
+    }
+
+    // --- Stylists ---
+    function isValidStylist(data) {
+      return data.name is string && data.name.size() >= 2 && data.name.size() <= 100 &&
+             data.role is string && data.role.size() <= 100 &&
+             data.title is string && data.title.size() <= 150 &&
+             data.rating is number && data.rating >= 0 && data.rating <= 5.0 &&
+             (!('reviewsCount' in data) || (data.reviewsCount is int && data.reviewsCount >= 0)) &&
+             (!('experienceYears' in data) || (data.experienceYears is int && data.experienceYears >= 0)) &&
+             (!('avatarInitials' in data) || (data.avatarInitials is string && data.avatarInitials.size() <= 5)) &&
+             (!('isAvailable' in data) || data.isAvailable is bool);
+    }
+
+    match /stylists/{stylistId} {
+      allow read: if true;
+      allow create, update: if isSignedIn() && isValidId(stylistId) && isValidStylist(request.resource.data);
+      allow delete: if false;
+    }
+    
+    // --- Portfolio ---
+    match /portfolio/{itemId} {
+      allow read: if true;
+      allow create, update: if isSignedIn();
+      allow delete: if false;
+    }
+
+
+    // --- VIP Clients ---
+    function isValidClient(data) {
+      return data.name is string && data.name.size() >= 2 && data.name.size() <= 120 &&
+             data.phone is string && data.phone.size() >= 8 && data.phone.size() <= 30 &&
+             data.email is string && data.email.size() >= 5 && data.email.size() <= 120 &&
+             data.tier is string && data.tier.size() <= 50 &&
+             (!('visitsCount' in data) || (data.visitsCount is int && data.visitsCount >= 0)) &&
+             (!('totalSpent' in data) || (data.totalSpent is number && data.totalSpent >= 0)) &&
+             (!('lastVisit' in data) || (data.lastVisit is string && data.lastVisit.size() <= 50)) &&
+             (!('userId' in data) || (data.userId is string && data.userId.size() <= 128));
+    }
+
+    match /clients/{clientId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && isValidId(clientId) && isValidClient(request.resource.data);
+      allow delete: if false;
+    }
+
+    // --- Appointments ---
+    function isValidAppointment(data) {
+      return data.userId is string && data.userId.size() <= 128 &&
+             data.clientName is string && data.clientName.size() >= 2 && data.clientName.size() <= 120 &&
+             data.clientPhone is string && data.clientPhone.size() >= 8 && data.clientPhone.size() <= 30 &&
+             data.serviceName is string && data.serviceName.size() >= 2 && data.serviceName.size() <= 120 &&
+             data.stylistName is string && data.stylistName.size() >= 2 && data.stylistName.size() <= 100 &&
+             data.date is string && data.date.size() >= 2 && data.date.size() <= 50 &&
+             data.time is string && data.time.size() >= 2 && data.time.size() <= 20 &&
+             data.status is string && data.status in ['CONFIRMADO', 'EM_ATENDIMENTO', 'CONCLUIDO', 'CANCELADO'] &&
+             data.price is number && data.price >= 0 &&
+             (!('clientIsVip' in data) || data.clientIsVip is bool) &&
+             (!('notes' in data) || (data.notes is string && data.notes.size() <= 1000)) &&
+             (!('createdAt' in data) || (data.createdAt is timestamp && data.createdAt <= request.time)) &&
+             (!('updatedAt' in data) || (data.updatedAt is timestamp && data.updatedAt <= request.time));
+    }
+
+    match /appointments/{appointmentId} {
+      allow get, list: if isSignedIn();
+      allow create: if isSignedIn() &&
+                       isValidId(appointmentId) &&
+                       request.resource.data.userId == request.auth.uid &&
+                       isValidAppointment(request.resource.data);
+      allow update: if isSignedIn() &&
+                       isValidId(appointmentId) &&
+                       (resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid) &&
+                       isValidAppointment(request.resource.data);
+      allow delete: if isSignedIn() &&
+                       isValidId(appointmentId) &&
+                       resource.data.userId == request.auth.uid;
+    }
+  }
+}

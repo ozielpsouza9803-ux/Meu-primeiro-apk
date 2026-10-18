@@ -1,0 +1,254 @@
+{
+  "entities": {
+    "SalonService": {
+      "title": "SalonService",
+      "description": "Exclusive beauty service or treatment offered by the luxury salon",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the service"
+        },
+        "name": {
+          "type": "string",
+          "description": "Service title or luxury treatment name"
+        },
+        "category": {
+          "type": "string",
+          "description": "Service category",
+          "enum": ["CABELO", "COLORACAO", "SPA_FACIAL", "NAILS", "MAKEUP", "TODOS"]
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed description of the treatment and experience"
+        },
+        "durationMinutes": {
+          "type": "integer",
+          "description": "Estimated duration in minutes"
+        },
+        "price": {
+          "type": "number",
+          "description": "Price in BRL currency"
+        },
+        "rating": {
+          "type": "number",
+          "description": "Average rating of the service"
+        },
+        "isFeatured": {
+          "type": "boolean",
+          "description": "Whether service is featured on home banner"
+        },
+        "badge": {
+          "type": "string",
+          "description": "Optional luxury badge label"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp evaluated by server"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp evaluated by server"
+        }
+      },
+      "required": ["name", "category", "description", "durationMinutes", "price"]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "VIP client appointment booking",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the appointment"
+        },
+        "userId": {
+          "type": "string",
+          "description": "UID of the client who booked the appointment"
+        },
+        "clientName": {
+          "type": "string",
+          "description": "Full name of the client"
+        },
+        "clientPhone": {
+          "type": "string",
+          "description": "Contact phone number"
+        },
+        "clientIsVip": {
+          "type": "boolean",
+          "description": "Whether client has VIP Maison status"
+        },
+        "serviceName": {
+          "type": "string",
+          "description": "Name of booked service"
+        },
+        "stylistName": {
+          "type": "string",
+          "description": "Name of selected stylist"
+        },
+        "date": {
+          "type": "string",
+          "description": "Date of appointment"
+        },
+        "time": {
+          "type": "string",
+          "description": "Time slot of appointment"
+        },
+        "status": {
+          "type": "string",
+          "description": "Status of the appointment",
+          "enum": ["CONFIRMADO", "EM_ATENDIMENTO", "CONCLUIDO", "CANCELADO"]
+        },
+        "price": {
+          "type": "number",
+          "description": "Service price agreed"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Special preferences or requirements"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp for appointment creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp for last appointment modification"
+        }
+      },
+      "required": ["userId", "clientName", "clientPhone", "serviceName", "stylistName", "date", "time", "status", "price"]
+    },
+    "ClientVip": {
+      "title": "ClientVip",
+      "description": "VIP client profile in the salon concierge registry",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the client"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Associated Firebase auth UID if registered"
+        },
+        "name": {
+          "type": "string",
+          "description": "Client full name"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Client phone number"
+        },
+        "email": {
+          "type": "string",
+          "description": "Client email"
+        },
+        "tier": {
+          "type": "string",
+          "description": "Maison tier level (e.g. Maison Black, Maison Platinum, Maison Gold)"
+        },
+        "visitsCount": {
+          "type": "integer",
+          "description": "Number of completed visits"
+        },
+        "totalSpent": {
+          "type": "number",
+          "description": "Total amount spent at the salon"
+        },
+        "lastVisit": {
+          "type": "string",
+          "description": "Date of last visit"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Record creation server timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Record update server timestamp"
+        }
+      },
+      "required": ["name", "phone", "email", "tier"]
+    },
+    "Stylist": {
+      "title": "Stylist",
+      "description": "Professional stylist or beauty artist profile",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier of the stylist"
+        },
+        "name": {
+          "type": "string",
+          "description": "Stylist full name"
+        },
+        "role": {
+          "type": "string",
+          "description": "Primary role and specialty"
+        },
+        "title": {
+          "type": "string",
+          "description": "Formal qualification or academy certification"
+        },
+        "specialties": {
+          "type": "string",
+          "description": "List of beauty specialties"
+        },
+        "rating": {
+          "type": "number",
+          "description": "Rating out of 5.0"
+        },
+        "reviewsCount": {
+          "type": "integer",
+          "description": "Number of verified reviews"
+        },
+        "experienceYears": {
+          "type": "integer",
+          "description": "Years of experience"
+        },
+        "avatarInitials": {
+          "type": "string",
+          "description": "Initials for avatar"
+        },
+        "isAvailable": {
+          "type": "boolean",
+          "description": "Availability state"
+        }
+      },
+      "required": ["name", "role", "title", "rating"]
+    }
+  },
+  "firestore": {
+    "/services/{serviceId}": {
+      "schema": {
+        "$ref": "#/entities/SalonService"
+      },
+      "description": "Catalog of luxury salon services and treatments"
+    },
+    "/appointments/{appointmentId}": {
+      "schema": {
+        "$ref": "#/entities/Appointment"
+      },
+      "description": "Appointments booked by clients or managed by salon staff"
+    },
+    "/clients/{clientId}": {
+      "schema": {
+        "$ref": "#/entities/ClientVip"
+      },
+      "description": "Registered VIP clients directory"
+    },
+    "/stylists/{stylistId}": {
+      "schema": {
+        "$ref": "#/entities/Stylist"
+      },
+      "description": "Master stylists and beauty artists directory"
+    }
+  }
+}
